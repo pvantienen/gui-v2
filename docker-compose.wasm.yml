@@ -1,5 +1,7 @@
 # Local WASM build (Victron scripts require Ubuntu 22+ x86_64).
 # Usage (from repo root):
+#   ./scripts/run-local-docker-wasm.sh
+# or:
 #   docker compose -f docker-compose.wasm.yml build
 #   docker compose -f docker-compose.wasm.yml run --rm wasm-build
 #
