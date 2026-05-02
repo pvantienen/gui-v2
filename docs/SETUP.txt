@@ -1,14 +1,19 @@
 gui-v2: local build (Homebrew) → later Render
 ==============================================
 
-1) Homebrew (Apple Silicon: prefer native brew at /opt/homebrew)
-   - Install from https://brew.sh if needed.
-   - cd into this repo root (the folder that contains the Brewfile, i.e. gui-v2):
-       cd /path/to/gui-v2
-       brew bundle install
-     This installs the Docker Desktop cask only (simplest path on Mac).
-     If you are one level up (e.g. a parent victronenergy folder), use:
-       brew bundle install --file=gui-v2/Brewfile
+1) Docker Desktop (must match your Mac CPU)
+   Apple Silicon (arm64):
+     - If Homebrew lives under /usr/local (Intel/Rosetta brew), "brew bundle" installs the WRONG
+       Docker and you will see: "This is the Intel version of Docker Desktop".
+     - Fix (pick one):
+         A) Install Apple Silicon Homebrew to /opt/homebrew (see https://brew.sh), then:
+              cd /path/to/gui-v2 && brew bundle install
+         B) Or skip brew for Docker: download and install:
+              https://desktop.docker.com/mac/main/arm64/Docker.dmg
+   Intel Mac (x86_64):
+     - cd into this repo root (folder that contains Brewfile):
+         cd /path/to/gui-v2 && brew bundle install
+     - Or one level up:  brew bundle install --file=gui-v2/Brewfile
 
 2) Start Docker
    - Open "Docker" from Applications, or run:  open -a Docker

@@ -7,9 +7,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "${ROOT}"
 
 if [[ "$(uname -m)" == "arm64" ]] && [[ -x /usr/local/bin/brew ]] && [[ ! -x /opt/homebrew/bin/brew ]]; then
-  echo "Note: You only have Intel Homebrew (/usr/local) on Apple Silicon."
-  echo "      For fewer Docker/Lima issues, install Homebrew for arm64: https://brew.sh"
-  echo "      Then: cd /path/to/gui-v2 && brew bundle install"
+  echo "Note: Intel-only Homebrew (/usr/local) on Apple Silicon installs Intel Docker — wrong chip."
+  echo "      Use Apple Silicon Homebrew (/opt/homebrew): https://brew.sh"
+  echo "      Or install Docker directly: https://desktop.docker.com/mac/main/arm64/Docker.dmg"
   echo
 fi
 
@@ -38,6 +38,19 @@ if ! docker info >/dev/null 2>&1; then
   echo "Check:  docker info"
   echo "Full steps: docs/SETUP.txt"
   exit 1
+fi
+
+# Apple Silicon Mac must run ARM64 Docker, not the x86_64 cask from Intel brew.
+if [[ "$(uname -m)" == "arm64" ]]; then
+  _carch="$(docker version -f '{{.Client.Arch}}' 2>/dev/null || echo "")"
+  if [[ "${_carch}" == "amd64" ]]; then
+    echo "ERROR: Docker CLI is amd64 (Intel Docker) on an Apple Silicon Mac."
+    echo "Uninstall Docker Desktop, then install the Apple Silicon build:"
+    echo "  https://desktop.docker.com/mac/main/arm64/Docker.dmg"
+    echo "Or install Homebrew to /opt/homebrew and run: brew bundle install"
+    echo "(see docs/SETUP.txt)"
+    exit 1
+  fi
 fi
 
 echo ">>> Building Docker image (wasm-build)..."
