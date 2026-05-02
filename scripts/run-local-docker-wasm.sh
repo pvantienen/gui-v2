@@ -40,14 +40,19 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
-# Apple Silicon Mac must run ARM64 Docker, not the x86_64 cask from Intel brew.
+# Apple Silicon: docker CLI often shows amd64 when the shell is running under Rosetta.
 if [[ "$(uname -m)" == "arm64" ]]; then
   _carch="$(docker version -f '{{.Client.Arch}}' 2>/dev/null || echo "")"
   if [[ "${_carch}" == "amd64" ]]; then
-    echo "ERROR: Docker CLI is amd64 (Intel Docker) on an Apple Silicon Mac."
-    echo "Uninstall Docker Desktop, then install the Apple Silicon build:"
-    echo "  https://desktop.docker.com/mac/main/arm64/Docker.dmg"
-    echo "Or install Homebrew to /opt/homebrew and run: brew bundle install"
+    if [[ -z "${GUI_V2_REEXEC_ARM64:-}" ]]; then
+      echo "NOTE: Docker CLI reports amd64 (Rosetta). Re-running this script under native arm64..."
+      export GUI_V2_REEXEC_ARM64=1
+      exec arch -arm64 /bin/bash "$0" "$@"
+    fi
+    echo "ERROR: Docker CLI is still amd64. Fix the terminal, not Docker Desktop:"
+    echo "  - Terminal.app / iTerm / Cursor: Get Info → uncheck \"Open using Rosetta\", then quit and reopen."
+    echo "  Or run:  arch -arm64 /bin/bash -lc 'cd \"${ROOT}\" && ./scripts/run-local-docker-wasm.sh'"
+    echo "If you truly installed Intel Docker on Apple Silicon, use: https://desktop.docker.com/mac/main/arm64/Docker.dmg"
     echo "(see docs/SETUP.txt)"
     exit 1
   fi

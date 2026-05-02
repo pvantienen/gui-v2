@@ -21,6 +21,10 @@ gui-v2: local build (Homebrew) → later Render
    - In a terminal:  docker info   (must succeed before the build script).
    - If docker: command not found, quit Terminal, reopen it, or ensure /usr/local/bin is on your PATH.
 
+   Rosetta (common): if  docker version -f '{{.Client.Arch}}'  prints amd64 on an M1/M2/M3 Mac,
+   your terminal is x86_64. Uncheck "Open using Rosetta" on Terminal / Cursor / iTerm, reopen,
+   or run the build script via:  arch -arm64 /bin/bash -lc 'cd /path/to/gui-v2 && ./scripts/run-local-docker-wasm.sh'
+
 3) Build WASM (same output shape as Victron CI; Docker uses Ubuntu inside the container)
        ./scripts/run-local-docker-wasm.sh
    - First run: often 30–60+ minutes (Qt + Emscripten + compile). Repeats are faster (cached volume).
