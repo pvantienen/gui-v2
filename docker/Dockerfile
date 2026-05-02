@@ -5,7 +5,7 @@ FROM --platform=linux/amd64 ubuntu:24.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -yq && apt-get install -y --no-install-recommends \
-    ca-certificates curl sudo lsb-release rsync python3 \
+    ca-certificates curl git sudo lsb-release rsync python3 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL "https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64" -o /usr/local/bin/yq \
