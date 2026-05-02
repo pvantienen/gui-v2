@@ -1,0 +1,27 @@
+# Local WASM build (Victron scripts require Ubuntu 22+ x86_64).
+# Usage (from repo root):
+#   docker compose -f docker-compose.wasm.yml build
+#   docker compose -f docker-compose.wasm.yml run --rm wasm-build
+#
+# First run downloads Qt 6.8.3 + Emscripten into the named volume (large, ~10+ GB).
+# Artifacts are copied to ./wasm-dist/ on the host (see COPY_OUT in entrypoint).
+#
+# On Apple Silicon, platform is forced to linux/amd64.
+
+services:
+  wasm-build:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/src/gui-v2:ro
+      - ./wasm-dist:/out
+      - venus-wasm-toolcache:/opt/venus/build-gx-hostedtoolcache
+    shm_size: "4gb"
+    environment:
+      GUIV2_SRC: /src/gui-v2
+      COPY_OUT: /out
+
+volumes:
+  venus-wasm-toolcache:

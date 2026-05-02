@@ -1,0 +1,19 @@
+Render + Cerbo MQTT
+-------------------
+1) Build WASM
+   - GitHub: Actions → "build-wasm" → Run workflow (workflow_dispatch), or push a branch.
+   - Artifact "venus-webassembly" contains folder "wasm/".
+   - Or locally: docker compose -f docker-compose.wasm.yml build && docker compose -f docker-compose.wasm.yml run --rm wasm-build
+
+2) Deploy folder
+   - Copy everything inside the artifact's wasm/ directory into this repo's deploy/wasm/
+   - Commit and push (WASM files are large; if you prefer not to commit binaries, use a CI job that pushes a Docker image to a registry instead of this static COPY approach).
+
+3) Render
+   - New Blueprint → select this repo → render.yaml creates the Docker web service.
+   - Your browser loads the UI from Render; the UI still needs to reach the Cerbo MQTT broker.
+   - If the Cerbo is only on a private LAN, use Tailscale on the Cerbo (or a subnet router) and run MQTT over the tailnet, or expose the broker only inside a VPN—do not publish unauthenticated MQTT to the public internet.
+
+Tailscale / VPN
+---------------
+Only required if your users' browsers cannot route to the Cerbo IP (e.g. home LAN). The static site can be public on Render while MQTT uses a tailnet hostname and TLS if you configure it on Venus.

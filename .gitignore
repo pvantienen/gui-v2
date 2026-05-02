@@ -3,3 +3,6 @@ CMakeLists.txt.user.*
 src/themeobjects.h
 build/
 build-*/
+wasm-dist/
+deploy/wasm/*
+!deploy/wasm/.gitkeep

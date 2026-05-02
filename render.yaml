@@ -1,0 +1,14 @@
+# Render Blueprint: Web service serving pre-built gui-v2 static assets.
+# Before first deploy: copy WASM artifact into deploy/wasm/ (see deploy/RENDER.txt),
+# commit those files, push, then connect this repo on Render using this blueprint.
+#
+# https://render.com/docs/blueprint-spec
+version: "1"
+services:
+  - type: web
+    name: venus-gui-v2
+    runtime: docker
+    dockerfilePath: ./deploy/Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
