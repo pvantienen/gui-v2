@@ -15,6 +15,12 @@ RUN useradd -m -s /bin/bash builder \
     && echo 'builder ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/builder \
     && chmod 0440 /etc/sudoers.d/builder
 
+# Victron install script runs: sudo chown -R ${USER}:${USER} /opt/venus/python
+# Without USER set, ownership stays root and pip install aqtinstall fails with Permission denied.
+ENV USER=builder
+ENV LOGNAME=builder
+ENV HOME=/home/builder
+
 USER builder
 WORKDIR /work
 

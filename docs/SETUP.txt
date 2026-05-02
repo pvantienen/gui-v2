@@ -28,6 +28,8 @@ gui-v2: local build (Homebrew) → later Render
 3) Build WASM (same output shape as Victron CI; Docker uses Ubuntu inside the container)
        ./scripts/run-local-docker-wasm.sh
    - First run: often 30–60+ minutes (Qt + Emscripten + compile). Repeats are faster (cached volume).
+   - If pip/aqtinstall failed with Permission denied under /opt/venus/python: pull latest custom/dev,
+     then  docker compose -f docker-compose.wasm.yml build --no-cache  and run the script again.
 
 4) Run the UI in a browser on your machine
        cd wasm-dist/build-wasm_files_to_copy/wasm

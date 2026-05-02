@@ -2,6 +2,9 @@
 # Build gui-v2 WASM inside Docker without modifying the host working tree (rsync to /tmp).
 set -euo pipefail
 
+export USER="${USER:-$(id -un)}"
+export LOGNAME="${LOGNAME:-${USER}}"
+
 SRC="${GUIV2_SRC:-/src/gui-v2}"
 WORK="/tmp/gui-v2-work"
 
@@ -44,6 +47,11 @@ PY
 QT_VERSION="$(grep -E '^QT_VERSION=' scripts/.env | head -1 | cut -d= -f2)"
 if [[ "${SKIP_INSTALL:-0}" != "1" ]]; then
   if [[ ! -f "/opt/venus/build-gx-hostedtoolcache/Qt/${QT_VERSION}/wasm_singlethread/bin/qmake" ]]; then
+    # Remove half-created venv from a failed run (root-owned site-packages).
+    if [[ -d /opt/venus/python ]]; then
+      echo ">>> Removing existing /opt/venus/python before fresh toolchain install..."
+      sudo rm -rf /opt/venus/python
+    fi
     echo ">>> Running build-wasm-install-requirements.sh (first run: downloads Qt + emsdk; 30–60+ min)..."
     bash scripts/build-wasm-install-requirements.sh
   else
