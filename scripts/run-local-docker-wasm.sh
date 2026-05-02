@@ -22,14 +22,20 @@ compose() {
 }
 
 if ! docker info >/dev/null 2>&1; then
-  echo "Docker is not running or not installed."
+  echo "Docker is not running or the CLI cannot reach the engine."
   echo
-  if [[ -f "${ROOT}/Brewfile" ]] && command -v brew >/dev/null 2>&1; then
-    echo "Simplest fix (Homebrew): from repo root run"
+  if [[ -d "/Applications/Docker.app" ]]; then
+    echo "Docker Desktop is installed. Start it and wait until the whale menu shows \"running\":"
+    echo "    open -a Docker"
+    echo "First launch can take a minute; accept any permission prompts."
+    echo
+  elif [[ -f "${ROOT}/Brewfile" ]] && command -v brew >/dev/null 2>&1; then
+    echo "Install the app (if you have not): from this repo run"
     echo "    brew bundle install"
-    echo "Then open Docker from Applications and wait until Docker is running, and try again."
+    echo "Then: open -a Docker"
     echo
   fi
+  echo "Check:  docker info"
   echo "Full steps: docs/SETUP.txt"
   exit 1
 fi

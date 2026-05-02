@@ -11,8 +11,10 @@ gui-v2: local build (Homebrew) → later Render
        brew bundle install --file=gui-v2/Brewfile
 
 2) Start Docker
-   - Open "Docker" from Applications. Wait until the whale icon says Docker is running.
-   - In a terminal: docker info   (should not error)
+   - Open "Docker" from Applications, or run:  open -a Docker
+   - Wait until the menu bar whale shows Docker is running (first start can take 1–2 minutes).
+   - In a terminal:  docker info   (must succeed before the build script).
+   - If docker: command not found, quit Terminal, reopen it, or ensure /usr/local/bin is on your PATH.
 
 3) Build WASM (same output shape as Victron CI; Docker uses Ubuntu inside the container)
        ./scripts/run-local-docker-wasm.sh
