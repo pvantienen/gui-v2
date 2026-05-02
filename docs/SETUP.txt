@@ -1,0 +1,37 @@
+gui-v2: local build (Homebrew) → later Render
+==============================================
+
+1) Homebrew (Apple Silicon: prefer native brew at /opt/homebrew)
+   - Install from https://brew.sh if needed.
+   - From this repo root:
+       brew bundle install --no-lock
+     This installs the Docker Desktop cask only (simplest path on Mac).
+
+2) Start Docker
+   - Open "Docker" from Applications. Wait until the whale icon says Docker is running.
+   - In a terminal: docker info   (should not error)
+
+3) Build WASM (same output shape as Victron CI; Docker uses Ubuntu inside the container)
+       ./scripts/run-local-docker-wasm.sh
+   - First run: often 30–60+ minutes (Qt + Emscripten + compile). Repeats are faster (cached volume).
+
+4) Run the UI in a browser on your machine
+       cd wasm-dist/build-wasm_files_to_copy/wasm
+       python3 -m http.server 8765
+   - Open http://localhost:8765/
+   - Point the app at your Cerbo MQTT broker (same LAN, or Tailscale/VPN if the broker is not reachable otherwise).
+
+5) Hand off to Render (same Docker image the repo already defines)
+   - Copy the built folder contents:
+       wasm-dist/build-wasm_files_to_copy/wasm/*
+     into:
+       deploy/wasm/
+   - Commit the wasm files for Render to COPY them (they are gitignored by default; use):
+       git add -f deploy/wasm
+   - On Render: New → Blueprint (or Web Service from Dockerfile), use this repo and render.yaml.
+   - Alternative without committing large binaries: build in CI and push a container image to a registry; Render pulls that image. (Not wired in this repo yet.)
+
+Notes
+-----
+- Rosetta / Intel Homebrew under /usr/local on an Apple Silicon Mac often breaks Colima/Lima. Use /opt/homebrew and a non-Rosetta terminal when using Colima. Docker Desktop from the Brewfile usually avoids that class of issue.
+- render.yaml and deploy/Dockerfile are the Render-side contract; Homebrew + Docker are only for your laptop.

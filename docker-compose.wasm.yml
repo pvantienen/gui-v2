@@ -1,4 +1,5 @@
 # Local WASM build (Victron scripts require Ubuntu 22+ x86_64).
+# Prereq: Docker Desktop (brew bundle install --no-lock). See docs/SETUP.txt.
 # Usage (from repo root):
 #   ./scripts/run-local-docker-wasm.sh
 # or:

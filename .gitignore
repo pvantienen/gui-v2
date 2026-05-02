@@ -4,5 +4,6 @@ src/themeobjects.h
 build/
 build-*/
 wasm-dist/
+Brewfile.lock.json
 deploy/wasm/*
 !deploy/wasm/.gitkeep

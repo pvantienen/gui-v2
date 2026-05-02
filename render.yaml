@@ -1,6 +1,5 @@
 # Render Blueprint: Web service serving pre-built gui-v2 static assets.
-# Before first deploy: copy WASM artifact into deploy/wasm/ (see deploy/RENDER.txt),
-# commit those files, push, then connect this repo on Render using this blueprint.
+# Before first deploy: copy WASM into deploy/wasm/ and push (see docs/SETUP.txt section 5).
 #
 # https://render.com/docs/blueprint-spec
 version: "1"
