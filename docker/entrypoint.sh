@@ -13,10 +13,9 @@ if [[ ! -f "${SRC}/scripts/build-wasm.sh" ]]; then
   exit 1
 fi
 
-echo ">>> Syncing sources to ${WORK} (excluding .git, build-wasm*)..."
+echo ">>> Syncing sources to ${WORK} (including .git for submodules; excluding build-wasm*)..."
 mkdir -p "${WORK}"
 rsync -a "${SRC}/" "${WORK}/" \
-  --exclude .git \
   --exclude build-wasm \
   --exclude build-wasm_files_to_copy
 
@@ -45,17 +44,26 @@ p.write_text(text[:start] + repl + text[end:])
 PY
 
 QT_VERSION="$(grep -E '^QT_VERSION=' scripts/.env | head -1 | cut -d= -f2)"
+OUTPUTDIR="$(grep -E '^OUTPUTDIR=' scripts/.env | head -1 | cut -d= -f2- | tr -d '"')"
+OUTPUTDIR="${OUTPUTDIR:-/opt/venus/build-gx-hostedtoolcache}"
+
+toolchain_complete() {
+  [[ -f "${OUTPUTDIR}/Qt/${QT_VERSION}/wasm_singlethread/bin/qmake" ]] \
+    && [[ -f "${OUTPUTDIR}/emsdk/emsdk_env.sh" ]] \
+    && [[ -f /opt/venus/python/bin/activate ]]
+}
+
 if [[ "${SKIP_INSTALL:-0}" != "1" ]]; then
-  if [[ ! -f "/opt/venus/build-gx-hostedtoolcache/Qt/${QT_VERSION}/wasm_singlethread/bin/qmake" ]]; then
-    # Remove half-created venv from a failed run (root-owned site-packages).
+  if toolchain_complete; then
+    echo ">>> Toolchain present in cache volume (Qt + emsdk + python venv); skipping install."
+  else
+    echo ">>> Toolchain incomplete or partial cache (need Qt wasm qmake + emsdk + /opt/venus/python)."
     if [[ -d /opt/venus/python ]]; then
-      echo ">>> Removing existing /opt/venus/python before fresh toolchain install..."
+      echo ">>> Removing existing /opt/venus/python before toolchain install..."
       sudo rm -rf /opt/venus/python
     fi
-    echo ">>> Running build-wasm-install-requirements.sh (first run: downloads Qt + emsdk; 30–60+ min)..."
+    echo ">>> Running build-wasm-install-requirements.sh (downloads/fixes Qt + emsdk; long on first run)..."
     bash scripts/build-wasm-install-requirements.sh
-  else
-    echo ">>> Toolchain present in cache volume; skipping install."
   fi
 else
   echo ">>> SKIP_INSTALL=1 set; skipping toolchain install."
